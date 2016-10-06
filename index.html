@@ -18,6 +18,23 @@
     </section>
 
     <section class="main-content">
+      <script type="text/javascript">
+  window.onload = function() { init() };
+
+  var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml?gid=0&single=true';
+
+  function init() {
+    Tabletop.init( { key: public_spreadsheet_url,
+                     callback: showInfo,
+                     simpleSheet: true } )
+  }
+
+  function showInfo(data, tabletop) {
+    alert("Successfully processed!")
+    console.log(data);
+  }
+</script>
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/DevProgress/nomad2016">Nomad2016</a> is maintained by <a href="https://github.com/DevProgress">DevProgress</a>.</span>
 
