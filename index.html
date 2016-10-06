@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <title>Nomad2016 by DevProgress</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.js"></script>    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.js"></script>
+      //<!-- Mapsheet - We'll need to include Google Maps, Handlebars for templating, and jQuery for general futzing about -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    //<!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
+    <script type="text/javascript" src="https://github.com/jsoma/mapsheet/blob/master/src/mapsheet.js"></script>
   </head>
   <body>
     <section class="page-header">
@@ -22,7 +30,7 @@
       <script type="text/javascript">
   window.onload = function() { init() };
 
-  var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml?gid=0&single=true';
+  var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml';
 
   function init() {
     Tabletop.init( { key: public_spreadsheet_url,
@@ -36,16 +44,9 @@
   }
         <html>
   <body>
-  //  <!-- We'll need to include Google Maps, Handlebars for templating, and jQuery for general futzing about -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
-    <!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
-    <script type="text/javascript" src="tabletop.js"></script>
-    <script type="text/javascript" src="mapsheet.js"></script>
 
-    <!-- This is where the map will go -->
+    //<!-- This is where the map will go -->
     <div id="map"></div>
 
     <!-- Let's make the map not too big -->
@@ -56,7 +57,7 @@
       }
     </style>
 
-    <!-- This is the popup you'll get when you click a marker. 
+    //<!-- This is the popup you'll get when you click a marker. 
          {{these}} are columns in your spreadsheet -->
     <script id="popup-template" type="text/x-handlebars-template">
       <img src="{{image}}">
@@ -68,7 +69,7 @@
     <script type="text/javascript">
       $(document).ready( function() {       
         // Make sure the spreadsheet is published!
-        var published_spreadsheet_url = 'https://docs.google.com/spreadsheet/pub?key=0AmYzu_s7QHsmdGNzMnkwbXRyVmdyZGdrWVRoMWRKVGc&output=html'; 
+        var published_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml'; 
 
         // Let's get the popup template and compile it using Handlebars
         var source   = $("#popup-template").html();
