@@ -15,47 +15,38 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    //<!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
+      //<!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
     <script type="text/javascript" src="nomad2016/src/mapsheet.js"></script>
+  
   </head>
+  
   <body>
     <section class="page-header">
       <h1 class="project-name">Nomad2016</h1>
-      <h2 class="project-tagline">helping people hit the road for hillary</h2>
+      <h2 class="project-tagline">helping people hit the road for Hillary</h2>
       <a href="placeholder" class="btn">Sign up to drive</a>
       <a href="https://devprogress.us/hrc-events" class="btn">Find an event and a ride</a>
     </section>
 
     <section class="main-content">
       <script type="text/javascript">
-  window.onload = function() { init() };
+       window.onload = function() { init() };
 
-  var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml';
+       var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml';
 
-  function init() {
-    Tabletop.init( { key: public_spreadsheet_url,
+       function init() {
+          Tabletop.init( { key: public_spreadsheet_url,
                      callback: showInfo,
                      simpleSheet: true } )
-  }
+        }
 
-  function showInfo(data, tabletop) {
-  //  alert("Successfully processed!")
-    console.log(data);
-  }
-        <html>
-  <body>
-
+       function showInfo(data, tabletop) {
+          alert("Successfully processed!")
+          console.log(data);
+        }
 
     //<!-- This is where the map will go -->
-    <div id="map"></div>
-
-    <!-- Let's make the map not too big -->
-    <style>
-      #map {
-        width: 600px;
-        height: 500px;
-      }
-    </style>
+    <div id="map"></div>    
 
     //<!-- This is the popup you'll get when you click a marker. 
          {{these}} are columns in your spreadsheet -->
@@ -83,7 +74,7 @@
         });
       });
     </script>
-  </body>
+      </body>
 </html>
 </script>
 
