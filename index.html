@@ -12,12 +12,17 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.js"></script>
     <!-- Mapsheet - We'll need to include Google Maps, Handlebars for templating, and jQuery for general futzing about -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDr7SOW5aAcJ-t3ZF4ctxLCGq4ECTYpg4&sensor=false"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDr7SOW5aAcJ-t3ZF4ctxLCGq4ECTYpg4"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
     <script type="text/javascript" src="./src/mapsheet.js"></script>
     <script type="text/javascript" src="./src/fecha.min.js"></script>
+    <style media="screen">
+      #map {
+        width: 100%;
+      }
+    </style>
 
   </head>
 
@@ -42,6 +47,8 @@
           <dt>Available seats</dt><dd>{{[Available seats]}}</dd>
         </dl>
         <a href="{{[HfA Event]}}" target="_blank">HfA event</a>
+        <br/>
+        <a href="https://example.com?ride={{ID}}" target="_blank">Request a seat</a>
       </script>
 
       <!-- Okay, time to do this! -->
@@ -67,6 +74,9 @@
           var map = Mapsheet({
             key: published_spreadsheet_url,
             element: "map",
+            markerOptions: {
+              iconUrl: './src/pin.png'
+						},
             popupTemplate: function(element) {
               element.start = df(element['Start date and time'])
               element.return = df(element['return date and time'])
