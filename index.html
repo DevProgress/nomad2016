@@ -92,14 +92,14 @@ x///////////////////////x   http://DevProgress.us
           var source   = $("#popup-template").html();
           var template = Handlebars.compile(source);
 
-          var df = function(dateString) {
-            if (dateString) {
-              var date = fecha.parse(dateString, 'YYYY-MM-DD HH:mm:ss')
-              return fecha.format(date, 'MMM Do, h:mma')
-            } else {
-              return "n/a"
-            }
-          }
+          //var df = function(dateString) {
+           // if (dateString) {
+             // var date = fecha.parse(dateString, 'YYYY-MM-DD HH:mm:ss')
+              //return fecha.format(date, 'MMM Do, h:mma')
+            //} else {
+              //return "n/a"
+            //}
+          //}
 
           // OK, now let's make the map
           var map = Mapsheet({
