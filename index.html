@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+ ____             ____
+|  _ \  _____   _|  _ \ _ __ ___   __ _ _ __ ___  ___ ___  _   _ ___
+| | | |/ _ \ \ / / |_) | '__/ _ \ / _` | '__/ _ \/ __/ __|| | | / __|
+| |_| |  __/\ V /|  __/| | | (_) | (_| | | |  __/\__ \__ \| |_| \__ \
+|____/ \___| \_/ |_|   |_|  \___/ \__, |_|  \___||___/___(_)__,_|___/
+                                  |___/
+ xxxxxxxxxxxxxxxxxxxxxxx
+x                     //x
+x   xxxxxxxxxxxxxxxxx///x   We are volunteers using our skills and expertise
+x  x                 x//x   to create tech tools to help elect Hillary
+x  x                 x//x   Clinton and other Democratic and progressive
+x  x     .           x//x   candidates. We are coders, designers, leaders,
+x  x  __.'.__        x//x   writers, mentors, and researchers. Each project
+x  x '-.   .-'       x//x   we work on focuses on an app, service, data
+x  x   /.'.\         x//x   resource, or other technology to advance the
+x  x   '   '         x//x   cause. We are a team — join us!
+x   xxxxxxxxxxxxxxxxx///x
+x///////////////////////x   http://DevProgress.us
+ xxxxxxxxxxxxxxxxxxxxxxx
+-->
+
+
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Nomad2016 by DevProgress</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat+Alternates:400,700|Roboto:400,900" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.js"></script>
+    <!-- Mapsheet - We'll need to include Google Maps, Handlebars for templating, and jQuery for general futzing about -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDr7SOW5aAcJ-t3ZF4ctxLCGq4ECTYpg4"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
+    <script type="text/javascript" src="./src/mapsheet.js"></script>
+    <script type="text/javascript" src="./src/fecha.min.js"></script>
+    <style media="screen">
+      #map {
+        width: 100%;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">nomad2016</h1>
+      <h2 class="project-tagline">Look on the map below to find a ride and get ready to hit the road for Hillary.</h2>
+      <a class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/gVKKXS" data-mode="1" target="_blank">Sign up to drive</a>
+<script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
+      <a class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/lcHUg4" data-mode="1" target="_blank">Can't find an available ride? Sign up for the wait list.</a>
+<script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
+
+	    
+	    
+
+    </section>
+
+    <section class="main-content">
+
+      <!-- This is where the map will go -->
+      <div id="map"></div>
+      <script id="popup-template" type="text/x-handlebars-template">
+        <h3>{{City}}, {{State}} to {{[Destination City]}}</h3>
+        <dl>
+          <dt>Pickup</dt><dd>{{[Start location]}}</dd>
+          <dt>Leaving</dt><dd>{{[Start date]}}, {{[Start time]}}</dd>
+          <dt>Returning</dt><dd>{{return}}</dd>
+          <dt>Available seats</dt><dd>{{[Available seats]}}</dd>
+        </dl>
+        <br/>
+
+        <a href="https://volunteer2016.typeform.com/to/iSl0Kk?rideid={{ID}}&destination={{[Destination City]}}&ridedate={{start}}" target="_blank">Request a seat</a>
+
+      </script>
+
+      <!-- Okay, time to do this! -->
+      <script type="text/javascript">
+        $(document).ready( function() {
+          // Make sure the spreadsheet is published!
+          var published_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml';
+
+          // Let's get the popup template and compile it using Handlebars
+          var source   = $("#popup-template").html();
+          var template = Handlebars.compile(source);
+
+          var df = function(dateString) {
+           if (dateString) {
+           var date = fecha.parse(dateString, 'YYYY-MM-DD HH:mm:ss')
+          return fecha.format(date, 'MMM Do, h:mma')
+          } else {
+          return "n/a"
+          }
+          }
+
+          // OK, now let's make the map
+          var map = Mapsheet({
+            key: published_spreadsheet_url,
+            element: "map",
+            markerOptions: {
+              iconUrl: './src/pin.png'
+						},
+            popupTemplate: function(element) {
+              element.start = df(element['Start date and time'])
+              element.return = df(element['return date and time'])
+              return template(element)
+            }
+          });
+        });
+      </script>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/DevProgress/nomad2016">Nomad2016</a> is a project made by the volunteers at <a href="https://devprogress.us">DevProgress</a>. We're working hard to help volunteers and supporters around the country get progressive candidates elected.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>. And then we changed a bunch of stuff. I hope you like it.</span>
+      </footer>
+
+    </section>
+
+
+  </body>
+</html>
