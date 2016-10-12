@@ -183,7 +183,22 @@
 			}
 			this.bounds = new google.maps.LatLngBounds();
 			this.infowindow = new google.maps.InfoWindow({ content: "loading...", maxWidth: '300' });
-		},
+      
+      var autoComplete = new google.maps.places.Autocomplete(   
+        document.getElementById('pac-input'), {
+          types: ['(cities)']
+        }
+      );
+      google.maps.event.addListener(autoComplete, 'place_changed', function() {
+        var place = autoComplete.getPlace();
+        if (place.geometry) {
+          console.log(place.geometry)
+          var bounds = new google.maps.LatLngBounds();
+          bounds.union(place.geometry.viewport);
+          this.map.fitBounds(bounds);
+        } 
+      });
+  	},
 		
 		/* 
 			Google Maps only colors markers #FE7569, but turns out you can use
@@ -277,43 +292,7 @@
 			if(!this.mapOptions.zoom && !this.mapOptions.center) {
   			this.map.fitBounds(this.bounds);
 			}
-		},
-    
-    initAutocomplete: function() { 
-      // Create the search box and link it to the UI element.
-      var input = document.getElementById('pac-input');
-      var searchBox = new google.maps.places.SearchBox(input);
-      this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-      // Bias the SearchBox results towards current map's viewport.
-      this.map.addListener('bounds_changed', function() {
-        searchBox.setBounds(this.map.getBounds());
-      });
-      // Listen for the event fired when the user selects a prediction and retrieve
-      // more details for that place.
-      searchBox.addListener('places_changed', function() {
-        var places = searchBox.getPlaces();
-
-        if (places.length == 0) {
-          return;
-        }
-        // For each place, get the icon, name and location.
-        var bounds = new google.maps.LatLngBounds();
-        places.forEach(function(place) {
-          if (!place.geometry) {
-            console.log("Returned place contains no geometry");
-            return;
-          }
-          if (place.geometry.viewport) {
-            // Only geocodes have viewport.
-            bounds.union(place.geometry.viewport);
-          } else {
-            bounds.extend(place.geometry.location);
-          }
-        });
-        this.map.fitBounds(bounds);
-      });
-    }
+		}
 	}
 
 	/*
