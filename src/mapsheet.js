@@ -168,7 +168,8 @@
 		this.mapOptions = merge_options( { 
       mapTypeId: google.maps.MapTypeId.ROADMAP, 
       mapTypeControl: false,
-      streetViewControl: false 
+      streetViewControl: false,
+      scrollwheel: false 
     }, options.mapOptions || {} );
 		// We'll be nice and allow center to be a lat/lng array instead of a Google Maps LatLng
 		if(this.mapOptions.center && this.mapOptions.center.length == 2) {
