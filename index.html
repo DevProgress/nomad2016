@@ -42,6 +42,7 @@ x///////////////////////x   http://DevProgress.us
     <!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
     <script type="text/javascript" src="./src/mapsheet.js"></script>
     <script type="text/javascript" src="./src/fecha.min.js"></script>
+    <script type-"text/javascript" src="src/app.js"></script>
     <style media="screen">
       #map {
         width: 100%;
@@ -54,18 +55,18 @@ x///////////////////////x   http://DevProgress.us
     <section class="page-header">
       <h1 class="project-name">nomad2016</h1>
       <h2 class="project-tagline">Look on the map below to find a ride and get ready to hit the road for Hillary.</h2>
+
       <a class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/gVKKXS" data-mode="1" target="_blank">Sign up to drive</a>
 <script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
       <a class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/lcHUg4" data-mode="1" target="_blank">Can't find an available ride? Sign up for the wait list.</a>
 <script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
-
-	    
-	    
-
     </section>
 
     <section class="main-content">
-
+      <span id="rides"></span> on
+      <select id="dateFilter">
+         <option value="">any date
+      </select>
       <!-- This is where the map will go -->
       <div id="map"></div>
       <script id="popup-template" type="text/x-handlebars-template">
@@ -85,6 +86,7 @@ x///////////////////////x   http://DevProgress.us
       <!-- Okay, time to do this! -->
       <script type="text/javascript">
         $(document).ready( function() {
+          setupDatePicker();
           // Make sure the spreadsheet is published!
           var published_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml';
 
@@ -107,11 +109,15 @@ x///////////////////////x   http://DevProgress.us
             element: "map",
             markerOptions: {
               iconUrl: './src/pin.png'
-						},
+            },
             popupTemplate: function(element) {
               element.start = df(element['Start date and time'])
               element.return = df(element['return date and time'])
               return template(element)
+            },
+            callback: function(mapsheet, tabletop) {
+              setMapsheet(mapsheet);
+              showRides(mapsheet.points.length);
             }
           });
         });
