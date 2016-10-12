@@ -185,9 +185,7 @@
 			this.infowindow = new google.maps.InfoWindow({ content: "loading...", maxWidth: '300' });
       
       var autoComplete = new google.maps.places.Autocomplete(   
-        document.getElementById('pac-input'), {
-          types: ['(cities)']
-        }
+        document.getElementById('pac-input')
       );
       google.maps.event.addListener(autoComplete, 'place_changed', function() {
         var place = autoComplete.getPlace();
