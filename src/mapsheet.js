@@ -162,10 +162,14 @@
 		Google Maps
 		
 	*/
-	
+  
 	Mapsheet.Providers.Google = function(options) {
 		this.map = options.map;
-		this.mapOptions = merge_options( { mapTypeId: google.maps.MapTypeId.ROADMAP }, options.mapOptions || {} );
+		this.mapOptions = merge_options( { 
+      mapTypeId: google.maps.MapTypeId.ROADMAP, 
+      mapTypeControl: false,
+      streetViewControl: false 
+    }, options.mapOptions || {} );
 		// We'll be nice and allow center to be a lat/lng array instead of a Google Maps LatLng
 		if(this.mapOptions.center && this.mapOptions.center.length == 2) {
 		  this.mapOptions.center = new google.maps.LatLng(this.mapOptions.center[0], this.mapOptions.center[1]);
@@ -179,7 +183,25 @@
 			}
 			this.bounds = new google.maps.LatLngBounds();
 			this.infowindow = new google.maps.InfoWindow({ content: "loading...", maxWidth: '300' });
-		},
+      
+      var autoComplete = new google.maps.places.Autocomplete(   
+        document.getElementById('pac-input'),
+        {
+          componentRestrictions: {country: 'us'}
+        }
+      );
+      var fireGeocode = function(map) {
+        google.maps.event.addListener(autoComplete, 'place_changed', function() {
+          var place = autoComplete.getPlace();
+          if (place.geometry) {
+            var bounds = new google.maps.LatLngBounds();
+            bounds.union(place.geometry.viewport);
+            map.fitBounds(bounds);
+          } 
+        });
+      }
+      fireGeocode(this.map)
+  	},
 		
 		/* 
 			Google Maps only colors markers #FE7569, but turns out you can use
