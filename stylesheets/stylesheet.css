@@ -25,9 +25,14 @@ a:hover {
   height: 500px;
 }
 
-.controls {
-  top: -8px;
-  margin-top: 10px;
+#pac-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  padding: 0 6px 0 6px;
+  text-overflow: ellipsis;
+  width: 100%;
   border: 1px solid transparent;
   border-radius: .3rem;
   box-sizing: border-box;
@@ -35,35 +40,13 @@ a:hover {
   height: 42px;
   outline: none;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  left: 20%;
-  right: 20%;
   position: relative;
   z-index: 999;
-}
-
-#pac-input {
-  background-color: #fff;
-  font-family: Roboto;
-  font-size: 15px;
-  font-weight: 300;
-  margin-left: 12px;
-  padding: 0 11px 0 13px;
-  text-overflow: ellipsis;
-  width: 60%;
 }
 
 #pac-input:focus {
   border-color: #4d90fe;
 }
-
-.pac-container {
-  font-family: Roboto;
-}
-
-#target {
-  width: 345px;
-}
-
 .btn {
   display: inline-block;
   margin-bottom: 1rem;
@@ -123,19 +106,55 @@ a:hover {
 
 @media screen and (min-width: 64em) {
   .page-header {
-    padding: 5rem 6rem;
+    padding: 3rem 4rem;
+  }
+  .controlblock {
+    display: inline-block;
+    width: 250px;
+    height: 60px;
+    margin: 0.3em;
+  }
+  .styled-select {
+    width: 240px;
+  }
+  .styled-select select {
+    width: 268px;
   }
 }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
-    padding: 3rem 4rem;
+    padding: 2rem 3rem;
+  }
+  .controlblock {
+    display: inline-block;
+    width: 200px;
+    height: 60px;
+    margin: 0.3em;
+  }
+  .styled-select {
+    width: 240px;
+  }
+  .styled-select select {
+    width: 268px;
   }
 }
 
 @media screen and (max-width: 42em) {
   .page-header {
-    padding: 2rem 1rem;
+    padding: 0.6rem 0.6rem;
+  }
+  .controlblock {
+    display: inline-block;
+    width: 100%;
+    height: 50px;
+    margin: 0.1em;
+  }
+  .styled-select {
+    width: 100%;
+  }
+  .styled-select select {
+    width: 110%;
   }
 }
 
@@ -385,4 +404,28 @@ a:hover {
   .site-footer {
     font-size: .9rem;
   }
+}
+
+.styled-select {
+   background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 60%;
+   height: 42px;
+   -webkit-border-radius: 0.3rem;
+   -moz-border-radius: 0.3rem;
+   border-radius: 0.3rem;
+   background-color: #1e6bb8;
+}
+
+.styled-select select {
+   background: transparent;
+   border: none;
+   font-size: 15px;
+   font-weight: 300;
+   height: 42px;
+   padding: 5px; /* If you add too much padding here, the options won't show in IE */
+   color: #fff;
+}
+
+#rides {
+  text-align: right;
+  vertical-align: text-bottom;
 }

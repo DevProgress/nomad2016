@@ -57,12 +57,17 @@ x///////////////////////x   http://DevProgress.us
     </section>
 
     <section class="main-content">
-      <span id="rides"></span> on
-      <select id="dateFilter">
-         <option value="">any date
-      </select>
-      <!-- This is where the map will go -->
-      <input id="pac-input" class="controls" type="text" placeholder="Search for your starting place">
+      <div class="controlblock">
+        <input id="pac-input" type="text" placeholder="Starting place">
+      </div>
+      <div class="controlblock">
+        <h3 id="rides"></h3>
+      </div>
+      <div class="controlblock styled-select">
+        <select id="dateFilter">
+           <option value="">any date
+        </select>
+      </div>
       <div id="map"></div>
       <script id="popup-template" type="text/x-handlebars-template">
         <h3>{{City}}, {{State}} to {{[Destination City]}}</h3>
