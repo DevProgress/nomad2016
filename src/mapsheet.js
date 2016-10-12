@@ -162,10 +162,14 @@
 		Google Maps
 		
 	*/
-	
+  
 	Mapsheet.Providers.Google = function(options) {
 		this.map = options.map;
-		this.mapOptions = merge_options( { mapTypeId: google.maps.MapTypeId.ROADMAP }, options.mapOptions || {} );
+		this.mapOptions = merge_options( { 
+      mapTypeId: google.maps.MapTypeId.ROADMAP, 
+      mapTypeControl: false,
+      streetViewControl: false 
+    }, options.mapOptions || {} );
 		// We'll be nice and allow center to be a lat/lng array instead of a Google Maps LatLng
 		if(this.mapOptions.center && this.mapOptions.center.length == 2) {
 		  this.mapOptions.center = new google.maps.LatLng(this.mapOptions.center[0], this.mapOptions.center[1]);
