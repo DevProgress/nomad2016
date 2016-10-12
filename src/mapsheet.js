@@ -185,17 +185,22 @@
 			this.infowindow = new google.maps.InfoWindow({ content: "loading...", maxWidth: '300' });
       
       var autoComplete = new google.maps.places.Autocomplete(   
-        document.getElementById('pac-input')
+        document.getElementById('pac-input'),
+        {
+          componentRestrictions: {country: 'us'}
+        }
       );
-      google.maps.event.addListener(autoComplete, 'place_changed', function() {
-        var place = autoComplete.getPlace();
-        if (place.geometry) {
-          console.log(place.geometry)
-          var bounds = new google.maps.LatLngBounds();
-          bounds.union(place.geometry.viewport);
-          this.map.fitBounds(bounds);
-        } 
-      });
+      var fireGeocode = function(map) {
+        google.maps.event.addListener(autoComplete, 'place_changed', function() {
+          var place = autoComplete.getPlace();
+          if (place.geometry) {
+            var bounds = new google.maps.LatLngBounds();
+            bounds.union(place.geometry.viewport);
+            map.fitBounds(bounds);
+          } 
+        });
+      }
+      fireGeocode(this.map)
   	},
 		
 		/* 
