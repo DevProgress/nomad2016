@@ -36,7 +36,7 @@ x///////////////////////x   http://DevProgress.us
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.4.3/tabletop.js"></script>
     <!-- Mapsheet - We'll need to include Google Maps, Handlebars for templating, and jQuery for general futzing about -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDr7SOW5aAcJ-t3ZF4ctxLCGq4ECTYpg4"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDr7SOW5aAcJ-t3ZF4ctxLCGq4ECTYpg4&libraries=places&callback=initAutocomplete"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <!-- Tabletop.js for accessing Google Spreadsheets and Mapsheet.js for mapping, of course -->
@@ -45,6 +45,43 @@ x///////////////////////x   http://DevProgress.us
     <style media="screen">
       #map {
         width: 100%;
+      }
+      .controls {
+       top: -8px;
+       margin-top: 10px;
+       border: 1px solid transparent;
+       border-radius: 0.3rem;
+       box-sizing: border-box;
+       -moz-box-sizing: border-box;
+       height: 42px;
+       outline: none;
+       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+       left: 20%;
+       right: 20%;
+       position: relative;
+       z-index:999;
+     }
+
+     #pac-input {
+       background-color: #fff;
+       font-family: Roboto;
+       font-size: 15px;
+       font-weight: 300;
+       margin-left: 12px;
+       padding: 0 11px 0 13px;
+       text-overflow: ellipsis;
+       width: 60%;
+     }
+
+     #pac-input:focus {
+       border-color: #4d90fe;
+     }
+
+     .pac-container {
+       font-family: Roboto;
+     }
+     #target {
+        width: 345px;
       }
     </style>
 
@@ -67,6 +104,7 @@ x///////////////////////x   http://DevProgress.us
     <section class="main-content">
 
       <!-- This is where the map will go -->
+      <input id="pac-input" class="controls" type="text" placeholder="Search places">
       <div id="map"></div>
       <script id="popup-template" type="text/x-handlebars-template">
         <h3>{{City}}, {{State}} to {{[Destination City]}}</h3>
