@@ -70,6 +70,13 @@ a:hover {
   border-color: rgba(255,255,255,0.3);
 }
 
+.btn.selected {
+  color: #717171;
+  text-decoration: none;
+  background-color: #eff0f1;
+  border-color: #bbb;
+}
+
 @media screen and (min-width: 64em) {
   .btn {
     padding: .75rem 1rem;
@@ -373,6 +380,10 @@ a:hover {
   }
 }
 
+.main-content {
+  padding-top: 0;
+}
+
 .site-footer {
   padding-top: 2rem;
   margin-top: 2rem;
@@ -397,6 +408,9 @@ a:hover {
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .site-footer {
     font-size: 1rem;
+  }
+  .main-content footer.high:first-child {
+    margin-top: 50px;
   }
 }
 
@@ -428,4 +442,19 @@ a:hover {
 
 #rides {
   text-align: right;
+}
+
+#ride-finder {
+  opacity: 0;
+}
+
+footer.low {
+  display: none;
+}
+
+#temp-footer {
+  left: 0;
+  right: 0;
+  position: absolute;
+  bottom: 30px;
 }

@@ -43,32 +43,56 @@ x///////////////////////x   http://DevProgress.us
     <script type="text/javascript" src="./src/mapsheet.js"></script>
     <script type="text/javascript" src="./src/fecha.min.js"></script>
     <script type-"text/javascript" src="src/app.js"></script>
+   
+   <script type="text/javascript">
+    window._chatlio = window._chatlio||[];
+    !function(){ var t=document.getElementById("chatlio-widget-embed");if(t&&window.ChatlioReact&&_chatlio.init)return void _chatlio.init(t,ChatlioReact);for(var e=function(t){return function(){_chatlio.push([t].concat(arguments)) }},i=["configure","identify","track","show","hide","isShown","isOnline"],a=0;a<i.length;a++)_chatlio[i[a]]||(_chatlio[i[a]]=e(i[a]));var n=document.createElement("script"),c=document.getElementsByTagName("script")[0];n.id="chatlio-widget-embed",n.src="https://w.chatlio.com/w.chatlio-widget.js",n.async=!0,n.setAttribute("data-embed-version","2.1");
+       n.setAttribute('data-widget-id','40d67bc0-debc-4c55-79af-f92d0927b293');
+       c.parentNode.insertBefore(n,c);
+    }();
+   </script>
+
+
   </head>
 
   <body>
     <section class="page-header">
       <h1 class="project-name">nomad2016</h1>
-      <h2 class="project-tagline">Search the map below to find a ride heading out at a time and place that works for you. Click the pin to see the details, and sign up to join the ride!</h2>
+      <!-- <h2 class="project-tagline">Search the map below to find a ride heading out at a time and place that works for you. Click the pin to see the details, and sign up to join the ride!</h2> -->
 
+      <a id="find-a-ride" class="btn" href="#">Find a ride</a>
       <a class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/gVKKXS" data-mode="1" target="_blank">Sign up to drive</a>
-<script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
-      <a class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/lcHUg4" data-mode="1" target="_blank">Can't find an available ride? Sign up for the wait list.</a>
 <script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
     </section>
 
+    <div id="temp-footer" class="main-content">
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/DevProgress/nomad2016">Nomad2016</a> is a project made by the volunteers at <a href="https://devprogress.us">DevProgress</a>. We're working hard to help volunteers and supporters around the country get progressive candidates elected.</span>
+      </footer>
+    </div>
+
     <section class="main-content">
-      <div class="controlblock">
-        <input id="pac-input" type="text" placeholder="Starting place">
+
+      <div id="ride-finder">
+        <div class="controlblock">
+          <input id="pac-input" type="text" placeholder="Starting place">
+        </div>
+        <div class="controlblock">
+          <h3 id="rides"></h3>
+        </div>
+        <div class="controlblock styled-select">
+          <select id="dateFilter">
+             <option value="">any date
+          </select>
+        </div>
+        <div id="map"></div>
+
+        <p>
+          Can't find an available ride? <a class="typeform-share" href="https://volunteer2016.typeform.com/to/lcHUg4" data-mode="1" target="_blank">Sign up for the wait list</a>.
+          <script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
+        </p>
       </div>
-      <div class="controlblock">
-        <h3 id="rides"></h3>
-      </div>
-      <div class="controlblock styled-select">
-        <select id="dateFilter">
-           <option value="">any date
-        </select>
-      </div>
-      <div id="map"></div>
+
       <script id="popup-template" type="text/x-handlebars-template">
         <h3>{{City}}, {{State}} to {{[Destination City]}}</h3>
         <dl>
@@ -85,6 +109,13 @@ x///////////////////////x   http://DevProgress.us
 
       <!-- Okay, time to do this! -->
       <script type="text/javascript">
+        // show the map and switch footers on button click
+        $('#find-a-ride').click(function(e) {
+          $(this).addClass('selected');
+          e.preventDefault();
+          $('footer.low, #temp-footer').toggle();
+          $('#ride-finder').fadeTo(250, 1);
+        })
         $(document).ready( function() {
           setupDatePicker();
           // Make sure the spreadsheet is published!
@@ -123,10 +154,8 @@ x///////////////////////x   http://DevProgress.us
         });
       </script>
 
-      <footer class="site-footer">
+      <footer class="site-footer low">
         <span class="site-footer-owner"><a href="https://github.com/DevProgress/nomad2016">Nomad2016</a> is a project made by the volunteers at <a href="https://devprogress.us">DevProgress</a>. We're working hard to help volunteers and supporters around the country get progressive candidates elected.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>. And then we changed a bunch of stuff. I hope you like it.</span>
       </footer>
 
     </section>
