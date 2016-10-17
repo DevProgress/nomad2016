@@ -5,7 +5,7 @@
 body {
   padding: 0;
   margin: 0;
-  font-family: "Monterrat Alternates","Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: #606c71;
@@ -27,32 +27,60 @@ a:hover {
 
 #pac-input {
   background-color: #fff;
-  font-family: Roboto;
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 15px;
   font-weight: 300;
   padding: 0 6px 0 6px;
   text-overflow: ellipsis;
   width: 100%;
-  border: 1px solid transparent;
+  border: 2px solid ;
+	border-color:#3E97C9;
   border-radius: .3rem;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   height: 42px;
   outline: none;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   position: relative;
   z-index: 999;
 }
 
 #pac-input:focus {
-  border-color: #4d90fe;
+  border-color: #3E97C9;
 }
+
+#drive-btn{
+	color:#ffffff;
+	font-weight:bold;
+	font-size:200%;
+	background-color:#86AE3E;
+	border-color:#86AE3E;
+}
+
+#find-a-ride{
+	color:#ffffff;
+	font-weight:bold;
+	font-size:200%;
+	background-color:#3E97C9;
+	border-color:#3E97C9;
+}
+
+#drive-btn:hover {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #BFD492;
+  border-color: #BFD492;
+}
+
+#find-a-ride:hover {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #85C7E2;
+  border-color: #85C7E2;
+}
+
 .btn {
   display: inline-block;
   margin-bottom: 1rem;
-  color: #717171;
-  background-color: rgba(255,255,255,.38);
-  border-color: #717171;
   border-style: solid;
   border-width: 1px;
   border-radius: .3rem;
@@ -161,31 +189,32 @@ a:hover {
     width: 100%;
   }
   .styled-select select {
-    width: 110%;
+    width: 100%;
   }
 }
 
 .project-name {
-  font-family: "Montserrat Alternates",sans-serif;
+  font-family: "Comfortaa","Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight:lighter;
   margin-top: 0;
   margin-bottom: .1rem;
 }
 
 @media screen and (min-width: 64em) {
   .project-name {
-    font-size: 3.25rem;
+    font-size: 8rem;
   }
 }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .project-name {
-    font-size: 2.25rem;
+    font-size: 4.25rem;
   }
 }
 
 @media screen and (max-width: 42em) {
   .project-name {
-    font-size: 1.75rem;
+    font-size: 3rem;
   }
 }
 
@@ -225,7 +254,7 @@ a:hover {
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-weight: 400;
-  color: #159957;
+  color: #32721A;
 }
 
 .main-content p {
@@ -421,13 +450,12 @@ a:hover {
 }
 
 .styled-select {
-   background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 60%;
    height: 42px;
    -webkit-border-radius: 0.3rem;
    -moz-border-radius: 0.3rem;
    border-radius: 0.3rem;
-   background-color: #1e6bb8;
-   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+   background-color: #3E97C9;
+	 margin-bottom: 20px;
 }
 
 .styled-select select {
@@ -457,4 +485,12 @@ footer.low {
   right: 0;
   position: absolute;
   bottom: 30px;
+}
+
+#dateFilter {
+    background-color: #3E97C9;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
 }
