@@ -68,10 +68,13 @@ x///////////////////////x   http://DevProgress.us
   <body>
     <section class="page-header">
       <h1 class="project-name">nomad2016</h1>
-      <!-- <h2 class="project-tagline">Search the map below to find a ride heading out at a time and place that works for you. Click the pin to see the details, and sign up to join the ride!</h2> -->
+      <h2 class="project-tagline">The 2016 carpool-to-canvass matchmaking tool.
+<br><br>Click a button below to sign up to drive a carpool to an out-of-state canvass, or to find a ride to join. 
+</h2>
 
-      <a id="find-a-ride" class="btn" href="#">Find a ride</a>
-      <a class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/gVKKXS" data-mode="1" target="_blank">Sign up to drive</a>
+      <a id="find-a-ride" class="typeform-share link btn" href="#">Find a ride!</a>
+      <a id="drive-btn" class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/gVKKXS" data-mode="1" target="_blank">Be a driver!</a>
+
 <script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
     </section>
 
@@ -85,14 +88,14 @@ x///////////////////////x   http://DevProgress.us
 
       <div id="ride-finder">
         <div class="controlblock">
-          <input id="pac-input" type="text" placeholder="Starting place">
+          <input id="pac-input" type="text" placeholder="Filter map by city or zip">
         </div>
         <div class="controlblock">
           <h3 id="rides"></h3>
         </div>
         <div class="controlblock styled-select">
           <select id="dateFilter">
-             <option value="">any date
+             <option class= "dateFilter-content" value="">Filter map by date
           </select>
         </div>
         <div id="map"></div>
