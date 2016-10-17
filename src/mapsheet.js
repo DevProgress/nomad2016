@@ -64,16 +64,18 @@
       }
       var elements = tabletop.sheets(this.sheetName).elements;
       for (var i = 0; i < elements.length; i++) {
-        var point = new Mapsheet.Point({
-          model: elements[i],
-          fields: this.fields,
-          popupContent: this.popupContent,
-          popupTemplate: this.popupTemplate,
-          markerOptions: this.markerOptions,
-          titleColumn: this.titleColumn,
-          click: this.click
-        });
-        this.points.push(point);
+        if (new Date(elements[i]['Sortable Start date and time']) > new Date()) {
+          var point = new Mapsheet.Point({
+            model: elements[i],
+            fields: this.fields,
+            popupContent: this.popupContent,
+            popupTemplate: this.popupTemplate,
+            markerOptions: this.markerOptions,
+            titleColumn: this.titleColumn,
+            click: this.click
+          });
+          this.points.push(point);
+        }
       };
       this.draw();
     },
