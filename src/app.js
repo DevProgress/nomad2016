@@ -7,7 +7,7 @@ var setMapsheet = function(ms) {
 var showRides = function(rides) {
     var text = rides + ' ';
     text += rides === 1 ? 'ride' : 'rides';
-    text += ' available';
+    text += ' available on';
     $('#rides').text(text);
 };
 
