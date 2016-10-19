@@ -74,7 +74,9 @@
             titleColumn: this.titleColumn,
             click: this.click
           });
-          this.points.push(point);
+          if(point.isValid()){
+            this.points.push(point);
+          }
         }
       };
       this.draw();
@@ -263,9 +265,6 @@
       },
       drawPoints: function(points) {
         for (var i = 0; i < points.length; i++) {
-          if (!points[i].isValid()) {
-            continue;
-          }
           var marker = this.drawMarker(points[i]);
           marker.setMap(this.map);
           this.bounds.extend(marker.position);
@@ -319,9 +318,6 @@
       },
       drawPoints: function(points) {
         for (var i = 0; i < points.length; i++) {
-          if (!points[i].isValid()) {
-            continue;
-          }
           var marker = this.drawMarker(points[i]);
           this.map.addShape(marker);
           points[i].marker = marker;
@@ -374,9 +370,6 @@
       },
       drawPoints: function(points) {
         for (var i = 0; i < points.length; i++) {
-          if (!points[i].isValid()) {
-            continue;
-          }
           var marker = this.drawMarker(points[i]);
           marker.addTo(this.markerLayer);
           this.bounds.extend(marker.getLatLng());
@@ -444,9 +437,6 @@
     },
     drawPoints: function(points) {
       for (var i = 0; i < points.length; i++) {
-        if (!points[i].isValid()) {
-          continue;
-        }
         var marker = this.drawMarker(points[i]);
         marker.addTo(this.markerLayer);
         this.bounds.extend(marker.getLatLng());
