@@ -128,7 +128,7 @@
       return this.get(this.titleColumn);
     },
     isValid: function() {
-      return !isNaN(this.latitude()) && !isNaN(this.longitude())
+      return !isNaN(this.latitude()) && !isNaN(this.longitude()) && this.model["Available seats"] != "0"
     },
     content: function() {
       var html = "";
