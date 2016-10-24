@@ -494,3 +494,11 @@ footer.low {
     border: none;
     cursor: pointer;
 }
+nav{
+	float:right;
+	margin-right:10px;
+	margin-top:10px;
+	margin-bottom:none;
+	margin-left:10px;
+	text-align:center;
+}
