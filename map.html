@@ -49,8 +49,7 @@ x///////////////////////x   http://DevProgress.us
        c.parentNode.insertBefore(n,c);
     }();
    </script>
-
-  <script>
+   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -58,10 +57,11 @@ x///////////////////////x   http://DevProgress.us
 
   ga('create', 'UA-85727298-1', 'auto');
   ga('send', 'pageview');
+
 </script>
 
 
-</head>
+  </head>
 
   <body>
 	<nav class="nav">
@@ -69,24 +69,98 @@ x///////////////////////x   http://DevProgress.us
 	</nav>	
     <section class="page-header">
       <h1 class="project-name">nomad2016</h1>
+
       <h2 class="project-tagline">Hit the road for Hillary!
-<br><br>Click a button below to let us know your travel plans, post available rides in your carpool, or to find a carpool to join.
+	<br><br>Search the map by city or zip and filter by departure date. The pins show start location for carpools. <br>Click the pins to see ride details and to ask to join the a ride. 
 </h2>
-
-      <a id="drive-btn" class="typeform-share link btn" href="https://volunteer2016.typeform.com/to/d47iDh" data-mode="1" target="_blank">I'm ready to hit the road!</a>
-      <a id="find-a-ride" class= "link btn" rel="map" href="map.html">I need a ride!</a>
-
-
-<script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
-    </section>
+</section>
 
 
     <section class="main-content">
 
+      <div id="ride-finder">
+        <div class="controlblock">
+          <input id="pac-input" type="text" placeholder="Filter map by city or zip">
         </div>
+        <div class="controlblock">
+          <h3 id="rides"></h3>
+        </div>
+        <div class="controlblock styled-select">
+          <select id="dateFilter">
+             <option class= "dateFilter-content" value="">Filter map by date
+          </select>
+        </div>
+        <div id="map"></div>
 
+        <p>
+          Can't find an available ride? <a class="typeform-share" href="https://volunteer2016.typeform.com/to/lcHUg4" data-mode="1" target="_blank">Sign up for the wait list</a>.
+          <script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}})()</script>
+        </p>
+      </div>
 
- <footer class="site-footer">
+      <script id="popup-template" type="text/x-handlebars-template">
+        <h3>{{City}}, {{State}} to {{[Destination City]}}</h3>
+        <dl>
+          <dt>Pickup</dt><dd>{{[Start location]}}</dd>
+          <dt>Leaving</dt><dd>{{[Start date]}}, {{[Start time]}}</dd>
+          <dt>Returning</dt><dd>{{return}}</dd>
+          <dt>Available seats</dt><dd>{{[Available seats]}}</dd>
+        </dl>
+        <br/>
+
+        <a id="join-btn" class="btn" href="https://volunteer2016.typeform.com/to/iSl0Kk?rideid={{ID}}&destination={{[Destination City]}}&ridedate={{start}}" target="_blank">Request a seat</a>
+
+      </script>
+
+      <!-- Okay, time to do this! -->
+      <script type="text/javascript">
+        // show the map and switch footers on button click
+        $('#find-a-ride').click(function(e) {
+          $(this).addClass('selected');
+          e.preventDefault();
+          $('footer.low, #temp-footer').toggle();
+          $('#ride-finder').fadeTo(250, 1);
+        })
+        $(document).ready( function() {
+          setupDatePicker();
+        
+  		// Make sure the spreadsheet is published!
+          var published_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s6x7JO6-oaAcHsTy3UgCtjzmTL7UPjBBDZIol_3O9FQ/pubhtml';
+
+          // Let's get the popup template and compile it using Handlebars
+          var source   = $("#popup-template").html();
+          var template = Handlebars.compile(source);
+
+          var df = function(dateString) {
+           if (dateString) {
+           var date = fecha.parse(dateString, 'YYYY-MM-DD HH:mm:ss')
+          return fecha.format(date, 'MMM Do, h:mma')
+          } else {
+          return "n/a"
+          }
+          }
+
+          // OK, now let's make the map
+          var map = Mapsheet({
+            key: published_spreadsheet_url,
+            element: "map",
+            markerOptions: {
+              iconUrl: './src/pin.png'
+            },
+            popupTemplate: function(element) {
+              element.start = df(element['Start date and time'])
+              element.return = df(element['return date and time'])
+              return template(element)
+            },
+            callback: function(mapsheet, tabletop) {
+              setMapsheet(mapsheet);
+              showRides(mapsheet.points.length);
+            }
+          });
+        });
+      </script>
+
+      <footer class="site-footer low">
         <span class="site-footer-owner"><a href="https://github.com/DevProgress/nomad2016">Nomad2016</a> is a project made by the volunteers at <a href="https://devprogress.us">DevProgress</a>. We're working hard to help volunteers and supporters around the country get progressive candidates elected.</span>
       </footer>
 

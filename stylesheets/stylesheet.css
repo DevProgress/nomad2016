@@ -48,6 +48,13 @@ a:hover {
   border-color: #3E97C9;
 }
 
+#join-btn{
+	color:#ffffff;
+	font-size:125%;
+	background-color:#C62D32;
+	border-color:#C62D32;
+}
+
 #drive-btn{
 	color:#ffffff;
 	font-weight:bold;
@@ -470,21 +477,6 @@ a:hover {
 
 #rides {
   text-align: right;
-}
-
-#ride-finder {
-  opacity: 0;
-}
-
-footer.low {
-  display: none;
-}
-
-#temp-footer {
-  left: 0;
-  right: 0;
-  position: absolute;
-  bottom: 30px;
 }
 
 #dateFilter {
