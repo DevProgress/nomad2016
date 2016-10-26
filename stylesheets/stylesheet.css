@@ -472,21 +472,6 @@ a:hover {
   text-align: right;
 }
 
-#ride-finder {
-  opacity: 0;
-}
-
-footer.low {
-  display: none;
-}
-
-#temp-footer {
-  left: 0;
-  right: 0;
-  position: absolute;
-  bottom: 30px;
-}
-
 #dateFilter {
     background-color: #3E97C9;
     color: white;
