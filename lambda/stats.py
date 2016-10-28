@@ -3,8 +3,8 @@
 from dateutil import parser as date_parser
 import requests
 
-API_URL = 'https://api.airtable.com/v0/appCTyJwdoi9M685d/%s'
-AUTH = {'Authorization': 'Bearer API_TOKEN_HERE'}
+API_URL = 'https://api.airtable.com/v0/appU7X9oKojjv8LHV/%s'
+AUTH = {'Authorization': 'Bearer keykla4QUXhDPlUTX'}
 
 def parse_people(data):
     '''
@@ -47,7 +47,7 @@ def load_people():
     r = requests.get(url, headers=AUTH, params=params)
     print('url=%s request=%s' % (url, r))
     data = r.json()
-    people = people + parse_people(data)
+    people = parse_people(data)
     while data.get('offset'):
         params['offset'] = data['offset']
         r = requests.get(url, headers=AUTH, params=params)
@@ -57,13 +57,34 @@ def load_people():
     return people
 
 
+def load_staging():
+    url = API_URL % 'Staging Locations'
+    params = {
+        'view': 'Main View'
+    }
+    staging = []
+    r = requests.get(url, headers=AUTH, params=params)
+    print('url=%s request=%s' % (url, r))
+    data = r.json()
+    print('records=%s' % len(data.get('records', [])))
+    for loc in data.get('records', []):
+        fields = loc['fields']
+        staging.append({
+            'id': loc['id'],
+            'city': fields.get('City', ''),
+            'location': fields['Staging Location'],
+            'people': fields['All People']
+        })
+    return staging
+
+
 def lambda_handler(event, context):
     print('event=%s' % event)
-    rval = {
-        'event': event
-    }
+    rval = {}
     # "querystring": "date=20161028&table=people"
     qs = event.get('querystring', '')
     if 'table=people' in qs:
         rval['people'] = load_people()
+    if 'table=staging' in qs:
+        rval['staging'] = load_staging()
     return rval
