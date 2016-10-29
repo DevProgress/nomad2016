@@ -13,6 +13,8 @@ function Dashboard() {
         $('ul.nav-tabs').append(el);
         dt = new Date(dt.getTime()+24*60*60*1000);
     }
+    this.carpoolTemplate = Handlebars.compile($('#carpool').html());
+    this.stagingColumnsTemplate = Handlebars.compile($('#stagingColumns').html());
 }
 
 Dashboard.prototype.setup = function() {
@@ -110,7 +112,39 @@ Dashboard.prototype.addPersonToDate = function(person, ymd) {
 Dashboard.prototype.setContent = function() {
     this.setupPeople();
     this.setupStaging();
-}
+    this.setupUnassigned();
+};
+
+Dashboard.prototype.setupUnassigned = function() {
+    var assigned = [];
+    Object.keys(this.staging).forEach(function (id) {
+        var loc = this.staging[id];
+        assigned = assigned.concat(loc.people);
+    }.bind(this));
+    var unassigned = _.reject(this.peopleByDate[this.ymd], function(id) {
+        return assigned.indexOf(id) >= 0;
+    });
+    // get carpools for these people
+    var carpools = [];
+    Object.keys(this.carpools).forEach(function(id) {
+        // carpool member is unassigned
+        var carpool = this.carpools[id];
+        var hasUnassigned =_.find(carpool.people, function(personId) {
+            return unassigned.indexOf(personId) >= 0;
+        });
+        if (hasUnassigned) {
+            carpools.push({
+                id: id,
+                name: carpool.name,
+                numPeople: carpool.people.length
+            });
+        }
+    }.bind(this));
+    $('#unassigned').html(this.carpoolTemplate({carpools: carpools}));
+    $('.carpool').on('dragstart', function(ev) {
+        ev.dataTransfer.setData('text', ev.target.id);
+    });
+};
 
 Dashboard.prototype.setupPeople = function() {
     var peopleIds = this.peopleByDate[this.ymd];
@@ -119,7 +153,6 @@ Dashboard.prototype.setupPeople = function() {
 };
 
 Dashboard.prototype.setupStaging = function() {
-    $('#locations').empty();
     var byName = _.sortBy(Object.keys(this.staging), function(id) {
         return this.staging[id].location;
     }.bind(this));
@@ -141,9 +174,13 @@ Dashboard.prototype.setupStaging = function() {
             emails: this.emailList(peopleIds)
         });
     }.bind(this));
-    var template = Handlebars.compile($('#stagingColumns').html());
-    var context = {locations: locations}
-    $('#locations').append(template(context));
+    $('#locations').html(this.stagingColumnsTemplate({locations: locations}));
+    $('.location').on('dragover', function(ev) {
+        ev.preventDefault();
+    });
+    $('.location').on('drop', function(ev) {
+        console.log('drop ', ev);
+    });
 };
 
 Dashboard.prototype.setDate = function(date) {

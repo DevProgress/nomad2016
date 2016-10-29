@@ -48,3 +48,9 @@ table.staging {
 #showAllEmails {
     margin-bottom: 10px;
 }
+
+.carpool {
+    display: inline-block !important;
+    margin: 5px;
+    padding: 10px !important;
+}
