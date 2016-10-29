@@ -1,4 +1,4 @@
-[function Dashboard() {
+function Dashboard() {
     var dt = new Date();
     var last = new Date(2016, 10, 9);
     this.city = 'Reno';
