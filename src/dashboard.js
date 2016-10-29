@@ -151,7 +151,7 @@ Dashboard.prototype.setDate = function(date) {
     this.date = fecha.parse(date, 'YYYY-MM-DD');
     this.ymd = fecha.format(this.date, 'YYYY-MM-DD');
     $('.nav-tabs li').removeClass('active');
-    $('.nav-tabs #tab'+ymd).addClass('active');
+    $('.nav-tabs #tab'+this.ymd).addClass('active');
     $('#displayDate').text(fecha.format(this.date, 'ddd MM/DD'));
     this.setupPeople();
     this.setupStaging();
