@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
 from dateutil import parser as date_parser
+import config
 import requests
 
 API_URL = 'https://api.airtable.com/v0/appU7X9oKojjv8LHV/%s'
-AUTH = {'Authorization': 'Bearer API_TOKEN'}
+AUTH = {'Authorization': 'Bearer %s' % config.AIRTABLE_TOKEN}
 
 DAYS = {
     'recAEdu3P74gaEXK9': '2016-11-08',
@@ -160,6 +161,9 @@ def lambda_handler(event, context):
     rval = {}
     # "querystring": "date=20161028&table=people"
     qs = event.get('querystring', '')
+    token_param = 'token=%s' % config.UI_TOKEN
+    if token_param not in qs:
+        return {}
     if 'table=people' in qs:
         rval['people'] = load_people()
     if 'table=staging' in qs:

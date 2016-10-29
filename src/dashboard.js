@@ -31,17 +31,18 @@ Dashboard.prototype.setup = function() {
         $('.emails').show();
     });
     var API = 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable';
+    var token = (new RegExp('token=(.*)')).exec(window.location.href)[1];
     var people = $.ajax({
         url: API,
-        data: { table: 'people' }
+        data: { table: 'people', token: token }
     });
     var staging = $.ajax({
         url: API,
-        data: { table: 'staging' }
+        data: { table: 'staging', token: token }
     });
     var carpools = $.ajax({
         url: API,
-        data: { table: 'carpools' }
+        data: { table: 'carpools', token: token }
     });
     var today = this.ymd;
     $.when(people, staging, carpools).done(function(peopleResp, stagingResp, carpoolsResp) {
