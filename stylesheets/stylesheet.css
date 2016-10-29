@@ -205,8 +205,6 @@ a:hover {
 	font-weight:lighter;
   margin-top: 0;
   margin-bottom: .1rem;
-  margin-left: 2.7rem;
-  padding-right: 2rem;
 }
 
 @media screen and (min-width: 64em) {
@@ -218,6 +216,8 @@ a:hover {
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .project-name {
     font-size: 4.25rem;
+    margin-left: 2.7rem;
+    padding-right: 2rem;
   }
 }
 
