@@ -117,6 +117,7 @@ Dashboard.prototype.addPersonToDate = function(person, ymd) {
 };
 
 Dashboard.prototype.setupPeople = function() {
+    var ymd = fecha.format(this.date, 'YYYY-MM-DD');
     var peopleIds = this.peopleByDate[this.ymd] || [];
     $('#peopleCount').text(peopleIds.length);
     $('#allEmailsList').text(this.emailList(peopleIds));
@@ -124,7 +125,6 @@ Dashboard.prototype.setupPeople = function() {
 
 Dashboard.prototype.setupStaging = function() {
     $('.staging tbody').empty();
-    var peopleIds = this.peopleByDate[this.ymd] || [];
     var byName = _.sortBy(Object.keys(this.staging), function(id) {
         return this.staging[id].location;
     }.bind(this));
@@ -151,7 +151,7 @@ Dashboard.prototype.setDate = function(date) {
     this.date = fecha.parse(date, 'YYYY-MM-DD');
     this.ymd = fecha.format(this.date, 'YYYY-MM-DD');
     $('.nav-tabs li').removeClass('active');
-    $('.nav-tabs #tab'+ymd).addClass('active');
+    $('.nav-tabs #tab'+this.ymd).addClass('active');
     $('#displayDate').text(fecha.format(this.date, 'ddd MM/DD'));
     this.setupPeople();
     this.setupStaging();
