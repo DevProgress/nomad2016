@@ -8,7 +8,7 @@ body {
 
 .emails {
     display: none;
-    width: 50%;
+    width: 75%;
     margin: 20px;
 }
 
@@ -21,4 +21,30 @@ body {
 
 table.staging {
     max-width: 600px;
+}
+
+.progress {
+    border-bottom: 1px;
+}
+
+#locations .location {
+    padding: 5px;
+}
+
+#locations h3 {
+    margin-top: 10px;
+}
+#locations .header {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #999;
+    background-color: #efefef;
+    padding: 5px;
+}
+
+#locations .email-list {
+    background-color: #fff;
+}
+
+#showAllEmails {
+    margin-bottom: 10px;
 }
