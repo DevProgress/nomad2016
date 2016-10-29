@@ -28,74 +28,65 @@ Dashboard.prototype.setup = function() {
     $('#allEmailsButton').on('click', function() {
         $('.emails').show();
     });
+    var API = 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable';
     var people = $.ajax({
-        url: 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable',
+        url: API,
         data: { table: 'people' }
     });
     var staging = $.ajax({
-        url: 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable',
+        url: API,
         data: { table: 'staging' }
     });
+    var carpools = $.ajax({
+        url: API,
+        data: { table: 'carpools' }
+    });
     var today = this.ymd;
-    $.when(people, staging).done(function(peopleResp, stagingResp) {
+    $.when(people, staging, carpools).done(function(peopleResp, stagingResp, carpoolsResp) {
         $('#loading').hide();
         console.log('loaded people ', peopleResp);
-        this.people = {};
-        this.peopleByDate = {};
-        this.staging = {};
-        this.stagingByDate = {};
-        this.dates.forEach(function(dt) {
-            this.peopleByDate[dt] = [];
-        }.bind(this));
         /*
-        {
             "person123": {
-                "id": "person123",
-                "start": "2016-10-28",
-                "return": "2016-10-30"
+                "email": "user@test.com"
             }
-        }
         */
-        peopleResp[0].people.forEach(function(p) {
-            this.people[p.id] = p;
-        }.bind(this));
-        Object.keys(this.people).forEach(function(id) {
-            var p = this.people[id];
-            // add to start and return
-            this.addPersonToDate(p, p.start);
-            this.addPersonToDate(p, p.return);
-            var dt = fecha.parse(p.start, 'YYYY-MM-DD');
-            dt.setDate(dt.getDate()+1);
-            while (fecha.format(dt, 'YYYY-MM-DD') < p.return) {
-                this.addPersonToDate(p, fecha.format(dt, 'YYYY-MM-DD'));
-                dt.setDate(dt.getDate()+1);
-            }
-        }.bind(this));
-        this.setupPeople();
+        this.people = peopleResp[0].people;
 
-        console.log('staging=', this.staging);
         /*
-        {
-            "city": "Reno",
-            "id": "recEi8nw4mFXyXbnN",
-            "location": "Terminal",
-            "people": ["recd0lh1vxzcjUQGN", "recPeOmqalv0iJaGc", ...]
-        }
+            "recEi8nw4mFXyXbnN": {
+                "city": "Reno",
+                "location": "Terminal",
+                "people": ["recwWeIYuawogM77b", "recOT04eLeZ7IXVZ3"]
+            }
         */
-        stagingResp[0].staging.forEach(function(s) {
-            this.staging[s.id] = s;
-        }.bind(this));
-        Object.keys(this.staging).forEach(function(id) {
-            var loc = this.staging[id];
-            this.stagingByDate[loc.id] = {};
-            this.dates.forEach(function(dt) {
-                // loc.people is array of people ids
-                // this.peopleByDate[dt] is array of people ids
-                this.stagingByDate[loc.id][dt] = _.intersection(loc.people, this.peopleByDate[dt]);
+
+        this.staging = stagingResp[0].staging;
+        // remove None 
+        if ('recMG5pKfvcu3vnDI' in this.staging) {
+            delete this.staging.recMG5pKfvcu3vnDI;
+        }
+
+        /*
+            "recTHiQkEWipln5y0": {
+                "days": ["2016-11-07", "2016-11-06"],
+                "name": "  - CPID374",
+                "people": ["recwWeIYuawogM77b", "recOT04eLeZ7IXVZ3"]
+            }
+        */
+        this.carpools = carpoolsResp[0].carpools;
+
+        this.peopleByDate = {};
+        this.dates.forEach(function(ymd) {
+            // get people in a carpool with the canvass day ymd
+            this.peopleByDate[ymd] = [];
+            Object.keys(this.carpools).forEach(function(id) {
+                var carpool = this.carpools[id];
+                if (carpool.days.indexOf(ymd) >= 0) {
+                    this.peopleByDate[ymd] = this.peopleByDate[ymd].concat(carpool.people);
+                }
             }.bind(this));
         }.bind(this));
-        this.setupStaging();
-
+        this.setContent();
         $('#content').show();
     }.bind(this));
 };
@@ -116,33 +107,43 @@ Dashboard.prototype.addPersonToDate = function(person, ymd) {
     }
 };
 
+Dashboard.prototype.setContent = function() {
+    this.setupPeople();
+    this.setupStaging();
+}
+
 Dashboard.prototype.setupPeople = function() {
-    var ymd = fecha.format(this.date, 'YYYY-MM-DD');
-    var peopleIds = this.peopleByDate[this.ymd] || [];
+    var peopleIds = this.peopleByDate[this.ymd];
     $('#peopleCount').text(peopleIds.length);
     $('#allEmailsList').text(this.emailList(peopleIds));
 };
 
 Dashboard.prototype.setupStaging = function() {
-    $('.staging tbody').empty();
+    $('#locations').empty();
     var byName = _.sortBy(Object.keys(this.staging), function(id) {
         return this.staging[id].location;
     }.bind(this));
+    var locations = [];
+    // all people here on this date
+    var dayPeopleIds = this.peopleByDate[this.ymd];
     byName.forEach(function(id) {
         var loc = this.staging[id];
-        var people = this.stagingByDate[loc.id][this.ymd];
-        var pct = '';
-        if (this.peopleByDate[this.ymd].length) {
-            pct = Math.round(people.length / this.peopleByDate[this.ymd].length * 100);
+        var peopleIds = _.intersection(dayPeopleIds, loc.people);
+        var pct = 'n/a';
+        if (dayPeopleIds.length) {
+            pct = Math.round(peopleIds.length / dayPeopleIds.length * 100);
         }
-        var row = '<tr>'+
-            '<td>'+loc.location+'</td>\n'+
-            '<td class="number">'+people.length+'</td>\n'+
-            '<td class="number">'+pct+'%</td>\n'+
-            '<td>'+this.emailList(people)+'</td>\n'+
-            '</tr>';
-        $('tbody').append(row);
+        locations.push({
+            location: loc.location,
+            percent: pct,
+            people: peopleIds.length,
+            peopleLabel: peopleIds.length === 1 ? 'person' : 'people',
+            emails: this.emailList(peopleIds)
+        });
     }.bind(this));
+    var template = Handlebars.compile($('#stagingColumns').html());
+    var context = {locations: locations}
+    $('#locations').append(template(context));
 };
 
 Dashboard.prototype.setDate = function(date) {
@@ -153,25 +154,7 @@ Dashboard.prototype.setDate = function(date) {
     $('.nav-tabs li').removeClass('active');
     $('.nav-tabs #tab'+this.ymd).addClass('active');
     $('#displayDate').text(fecha.format(this.date, 'ddd MM/DD'));
-    this.setupPeople();
-    this.setupStaging();
-};
-
-Dashboard.prototype.setCity = function(city) {
-    console.log('city=', city);
-    this.city = city;
-    this.load();
-};
-
-Dashboard.prototype.load = function() {
-    console.log('load '+this.date+' for '+this.city);
-    // https://lnrtmato2g.execute.amazonaws.com/live/airtable
-    // get from lambda
-    /*
-    email addresses by staging location
-    count by staging location #
-    unassigned
-    */
+    this.setContent();
 };
 
 $(document).ready(function() {

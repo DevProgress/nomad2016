@@ -34,6 +34,7 @@ x///////////////////////x   http://DevProgress.us
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/dashboard.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -71,10 +72,10 @@ x///////////////////////x   http://DevProgress.us
 
     <img src="img/squares.gif" id="loading">
 
-    <div id="content">
+    <div id="content" class="container-fluid">
         <h2><span id="peopleCount"></span> people on <span id="displayDate"></span></h2>
-        <div>
-            <button id="allEmailsButton" class="btn btn-primary">Show emails</button>
+        <div id="showAllEmails">
+            <button id="allEmailsButton" class="btn btn-primary">Show all emails</button>
 
             <div class="alert alert-info alert-dismissible emails" role="alert">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -82,22 +83,38 @@ x///////////////////////x   http://DevProgress.us
             </div>
         </div>
 
+        <!--
         <div>
-            <h3>by staging location</h3>
-            <table class="table table-striped staging">
-                <thead>
-                    <tr>
-                        <td>Location</td>
-                        <td>People</td>
-                        <td>% of total</td>
-                        <td>Emails</td>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <h3>Carpools without a staging location</h3>
+            Drag a carpool to a staging location.  All people in a carpool
+            will be assigned to the same location for the duration of their stay.
         </div>
+        <div class="row">
+          <div class="col-md-8" id="unassigned"></div>
+        </div>
+        -->
 
+        <div class="row" id="locations"></div>
     </div>
   </body>
+
+<script id="carpool" type="text/x-handlebars-template">
+  <div class="carpool label label-default" data="{{id}}" draggable>
+    {{name}} - {{people.length}} people
+  </div>
+</script>
+
+<script id="stagingColumns" type="text/x-handlebars-template">
+    {{#each locations}}
+      <div class="col-md-2 location">
+        <div class="header">
+          <h3>{{location}}</h3>
+          <h4>{{people}} {{peopleLabel}} ({{percent}}%)</h4>
+        </div>
+        <div class="email-list">
+          {{emails}}
+        </div>
+      </div>
+    {{/each}}
+</script>
 </html>
