@@ -195,11 +195,8 @@ def add_people_to_location(location_id, people_ids):
 def lambda_handler(event, context):
     #print('event=%s' % event)
     rval = {}
-    # "querystring": "date=20161028&table=people"
+    # "querystring": "table=people"
     qs = event.get('querystring', '')
-    token_param = 'token=%s' % config.UI_TOKEN
-    if token_param not in qs:
-        return rval
     if 'table=people' in qs:
         rval['people'] = load_people()
     if 'table=staging' in qs:
