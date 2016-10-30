@@ -17,7 +17,10 @@ function Dashboard() {
     this.stagingColumnsTemplate = Handlebars.compile($('#stagingColumns').html());
     this.dropZoneTemplate = Handlebars.compile($('#dropZones').html());
     this.token = (new RegExp('token=(.*)')).exec(window.location.href)[1];
-    this.API = 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable';
+    this.request = {
+        url: 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable',
+        headers: { 'x-api-key': this.token }
+    };
 }
 
 Dashboard.prototype.setup = function() {
@@ -32,18 +35,9 @@ Dashboard.prototype.setup = function() {
     $('#allEmailsButton').on('click', function() {
         $('.emails').show();
     });
-    var people = $.ajax({
-        url: this.API,
-        data: { table: 'people', token: this.token }
-    });
-    var staging = $.ajax({
-        url: this.API,
-        data: { table: 'staging', token: this.token }
-    });
-    var carpools = $.ajax({
-        url: this.API,
-        data: { table: 'carpools', token: this.token }
-    });
+    var people = $.ajax(_.extend({ data: { table: 'people' } }, this.request));
+    var staging = $.ajax(_.extend({ data: { table: 'staging' } }, this.request));
+    var carpools = $.ajax(_.extend({ data: { table: 'carpools' } }, this.request));
     var today = this.ymd;
     $.when(people, staging, carpools).done(function(peopleResp, stagingResp, carpoolsResp) {
         /*
@@ -115,6 +109,7 @@ Dashboard.prototype.addPersonToDate = function(person, ymd) {
 
 Dashboard.prototype.draw = function() {
     this.drawPeople();
+    $('#content').show();
     this.drawStaging();
     this.drawUnassigned();
 };
@@ -194,12 +189,11 @@ Dashboard.prototype.drawStaging = function(tableOnly) {
         $('#'+carpoolId).appendTo($(ev.target).find('.added'));
         $(ev.target).find('.pending').show();
         // add people to location
-        $.ajax({
-            url: this.API+'?token='+this.token,
+        $.ajax(_.extend({
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify({ location: locationId, people: peopleIds})
-        }).then(function(response) {
+        }, this.request)).then(function(response) {
             $(ev.target).find('.pending').hide();
             $('#'+carpoolId).text($('#'+carpoolId).text()+' added.');
             setTimeout(function() {
