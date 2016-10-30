@@ -198,7 +198,7 @@ Dashboard.prototype.drawStaging = function(tableOnly) {
             $(ev.target).find('.pending').hide();
             $('#'+carpoolId).text($('#'+carpoolId).text()+' added.');
             setTimeout(function() {
-                $('#'+carpoolId).hide();
+                $('#'+carpoolId).remove();
             }, 3000);
             // update staging
             var staging = response.staging;
