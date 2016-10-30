@@ -34,16 +34,6 @@ table.staging {
 #locations h3 {
     margin-top: 10px;
 }
-#locations .header {
-    margin-bottom: 10px;
-    border-bottom: 1px solid #999;
-    background-color: #efefef;
-    padding: 5px;
-}
-
-#locations .email-list {
-    background-color: #fff;
-}
 
 #showAllEmails {
     margin-bottom: 10px;
@@ -53,4 +43,22 @@ table.staging {
     display: inline-block !important;
     margin: 5px;
     padding: 10px !important;
+}
+
+thead tr {
+    background-color: #efefef;
+}
+
+thead td {
+    white-space: nowrap;
+}
+
+.pending {
+    display: none;
+}
+
+.pending img {
+    display: block;
+    width: 25px;
+    height: 25px;
 }

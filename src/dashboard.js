@@ -15,39 +15,37 @@ function Dashboard() {
     }
     this.carpoolTemplate = Handlebars.compile($('#carpool').html());
     this.stagingColumnsTemplate = Handlebars.compile($('#stagingColumns').html());
+    this.dropZoneTemplate = Handlebars.compile($('#dropZones').html());
+    this.token = (new RegExp('token=(.*)')).exec(window.location.href)[1];
+    this.API = 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable';
 }
 
 Dashboard.prototype.setup = function() {
-    var self = this;
     $('#displayDate').text(fecha.format(this.date, 'ddd MM/DD'));
     $('.nav-tabs #tab'+this.ymd).addClass('active');
     $('.city').on('click', function() {
-        self.setCity($(this).attr('data'));
-    });
+        this.setCity($(this).attr('data'));
+    }.bind(this));
     $('.date').on('click', function() {
-        self.setDate($(this).attr('data'));
-    });
+        this.setDate($(this).attr('data'));
+    }.bind(this));
     $('#allEmailsButton').on('click', function() {
         $('.emails').show();
     });
-    var API = 'https://lnrtmato2g.execute-api.us-east-1.amazonaws.com/live/airtable';
-    var token = (new RegExp('token=(.*)')).exec(window.location.href)[1];
     var people = $.ajax({
-        url: API,
-        data: { table: 'people', token: token }
+        url: this.API,
+        data: { table: 'people', token: this.token }
     });
     var staging = $.ajax({
-        url: API,
-        data: { table: 'staging', token: token }
+        url: this.API,
+        data: { table: 'staging', token: this.token }
     });
     var carpools = $.ajax({
-        url: API,
-        data: { table: 'carpools', token: token }
+        url: this.API,
+        data: { table: 'carpools', token: this.token }
     });
     var today = this.ymd;
     $.when(people, staging, carpools).done(function(peopleResp, stagingResp, carpoolsResp) {
-        $('#loading').hide();
-        console.log('loaded people ', peopleResp);
         /*
             "person123": {
                 "email": "user@test.com"
@@ -64,11 +62,15 @@ Dashboard.prototype.setup = function() {
         */
 
         this.staging = stagingResp[0].staging;
-        // remove None 
+        this.stagingbyName = _.sortBy(Object.keys(this.staging), function(id) {
+            return this.staging[id].location;
+        }.bind(this));
+        // remove None
+        /*
         if ('recMG5pKfvcu3vnDI' in this.staging) {
             delete this.staging.recMG5pKfvcu3vnDI;
         }
-
+        */
         /*
             "recTHiQkEWipln5y0": {
                 "days": ["2016-11-07", "2016-11-06"],
@@ -89,7 +91,8 @@ Dashboard.prototype.setup = function() {
                 }
             }.bind(this));
         }.bind(this));
-        this.setContent();
+        this.draw();
+        $('#loading').hide();
         $('#content').show();
     }.bind(this));
 };
@@ -110,13 +113,13 @@ Dashboard.prototype.addPersonToDate = function(person, ymd) {
     }
 };
 
-Dashboard.prototype.setContent = function() {
-    this.setupPeople();
-    this.setupStaging();
-    this.setupUnassigned();
+Dashboard.prototype.draw = function() {
+    this.drawPeople();
+    this.drawStaging();
+    this.drawUnassigned();
 };
 
-Dashboard.prototype.setupUnassigned = function() {
+Dashboard.prototype.drawUnassigned = function() {
     var assigned = [];
     Object.keys(this.staging).forEach(function (id) {
         var loc = this.staging[id];
@@ -143,24 +146,22 @@ Dashboard.prototype.setupUnassigned = function() {
     }.bind(this));
     $('#unassigned').html(this.carpoolTemplate({carpools: carpools}));
     $('.carpool').on('dragstart', function(ev) {
-        ev.dataTransfer.setData('text', ev.target.id);
+        ev.originalEvent.dataTransfer.setData('text', ev.target.id);
+        ev.originalEvent.dataTransfer.dropEffect = 'move';
     });
 };
 
-Dashboard.prototype.setupPeople = function() {
+Dashboard.prototype.drawPeople = function() {
     var peopleIds = this.peopleByDate[this.ymd];
     $('#peopleCount').text(peopleIds.length);
     $('#allEmailsList').text(this.emailList(peopleIds));
 };
 
-Dashboard.prototype.setupStaging = function() {
-    var byName = _.sortBy(Object.keys(this.staging), function(id) {
-        return this.staging[id].location;
-    }.bind(this));
+Dashboard.prototype.drawStaging = function(tableOnly) {
     var locations = [];
     // all people here on this date
     var dayPeopleIds = this.peopleByDate[this.ymd];
-    byName.forEach(function(id) {
+    this.stagingbyName.forEach(function(id) {
         var loc = this.staging[id];
         var peopleIds = _.intersection(dayPeopleIds, loc.people);
         var pct = 'n/a';
@@ -168,6 +169,7 @@ Dashboard.prototype.setupStaging = function() {
             pct = Math.round(peopleIds.length / dayPeopleIds.length * 100);
         }
         locations.push({
+            id: id,
             location: loc.location,
             percent: pct,
             people: peopleIds.length,
@@ -176,12 +178,41 @@ Dashboard.prototype.setupStaging = function() {
         });
     }.bind(this));
     $('#locations').html(this.stagingColumnsTemplate({locations: locations}));
-    $('.location').on('dragover', function(ev) {
+    if (tableOnly) {
+        return;
+    }
+    $('#carpoolDropZones').html(this.dropZoneTemplate({locations: locations}));
+    $('.drop-zone').on('dragover', function(ev) {
         ev.preventDefault();
     });
-    $('.location').on('drop', function(ev) {
-        console.log('drop ', ev);
-    });
+    $('.drop-zone').on('drop', function(ev) {
+        var carpoolId = ev.originalEvent.dataTransfer.getData('text');
+        var carpool = this.carpools[carpoolId];
+        var peopleIds = carpool.people;
+        var locationId = $(ev.target).attr('data');
+        // move label
+        $('#'+carpoolId).appendTo($(ev.target).find('.added'));
+        $(ev.target).find('.pending').show();
+        // add people to location
+        $.ajax({
+            url: this.API+'?token='+this.token,
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ location: locationId, people: peopleIds})
+        }).then(function(response) {
+            $(ev.target).find('.pending').hide();
+            $('#'+carpoolId).text($('#'+carpoolId).text()+' added.');
+            setTimeout(function() {
+                $('#'+carpoolId).hide();
+            }, 3000);
+            // update staging
+            var staging = response.staging;
+            var stagingId = Object.keys(staging)[0];
+            this.staging[stagingId] = response.staging[stagingId];
+            // redraw staging
+            this.drawStaging(true);
+        }.bind(this));
+    }.bind(this));
 };
 
 Dashboard.prototype.setDate = function(date) {
@@ -192,7 +223,7 @@ Dashboard.prototype.setDate = function(date) {
     $('.nav-tabs li').removeClass('active');
     $('.nav-tabs #tab'+this.ymd).addClass('active');
     $('#displayDate').text(fecha.format(this.date, 'ddd MM/DD'));
-    this.setContent();
+    this.draw();
 };
 
 $(document).ready(function() {

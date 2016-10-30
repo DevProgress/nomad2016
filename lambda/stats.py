@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
 from dateutil import parser as date_parser
-import config
+import json
 import requests
+
+import config
 
 API_URL = 'https://api.airtable.com/v0/appU7X9oKojjv8LHV/%s'
 AUTH = {'Authorization': 'Bearer %s' % config.AIRTABLE_TOKEN}
@@ -69,6 +71,18 @@ def load_people():
     return people
 
 
+def parse_staging(data):
+    staging = {}
+    for loc in data:
+        fields = loc['fields']
+        staging[loc['id']] = {
+            'city': fields.get('City', ''),
+            'location': fields['Staging Location'],
+            'people': fields.get('All People', [])
+        }
+    return staging
+
+
 def load_staging():
     url = API_URL % 'Staging Locations'
     params = {
@@ -79,13 +93,7 @@ def load_staging():
     print('url=%s request=%s' % (url, r))
     data = r.json()
     print('records=%s' % len(data.get('records', [])))
-    for loc in data.get('records', []):
-        fields = loc['fields']
-        staging[loc['id']] = {
-            'city': fields.get('City', ''),
-            'location': fields['Staging Location'],
-            'people': fields['All People']
-        }
+    staging = parse_staging(data.get('records', []))
     return staging
 
 
@@ -156,18 +164,49 @@ def load_canvass_days():
     return days
 
 
+def add_people_to_location(location_id, people_ids):
+    url = API_URL % 'Staging Locations'
+    print('add people %s to location %s' % (people_ids, location_id))
+    # get staging location
+    url += '/%s' % location_id
+    r = requests.get(url, headers=AUTH)
+    print('get url=%s request=%s' % (url, r))
+    data = r.json()
+    if not data.get('fields'):
+        print('no staging location')
+        return {}
+    # add people
+    people = data['fields'].get('All People', [])
+    people += people_ids
+    # update staging location
+    headers = {'Content-type': 'application/json'}
+    headers.update(AUTH)
+    data = {
+        'fields': {
+            'All People': people
+        }
+    }
+    print('updating people: data=%s' % (data))
+    r = requests.patch(url, headers=headers, data=json.dumps(data))
+    print('patch url=%s request=%s' % (url, r))
+    return parse_staging([r.json()])
+
+
 def lambda_handler(event, context):
-    print('event=%s' % event)
+    #print('event=%s' % event)
     rval = {}
     # "querystring": "date=20161028&table=people"
     qs = event.get('querystring', '')
     token_param = 'token=%s' % config.UI_TOKEN
     if token_param not in qs:
-        return {}
+        return rval
     if 'table=people' in qs:
         rval['people'] = load_people()
     if 'table=staging' in qs:
         rval['staging'] = load_staging()
     if 'table=carpools' in qs:
         rval['carpools'] = load_carpools()
+    body = event.get('body')
+    if body and body.get('people') and body.get('location'):
+        rval['staging'] = add_people_to_location(body['location'], body['people'])
     return rval
