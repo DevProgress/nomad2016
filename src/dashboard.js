@@ -26,12 +26,13 @@ function Dashboard() {
 Dashboard.prototype.setup = function() {
     $('#displayDate').text(fecha.format(this.date, 'ddd MM/DD'));
     $('.nav-tabs #tab'+this.ymd).addClass('active');
+    var self = this;
     $('.city').on('click', function() {
-        this.setCity($(this).attr('data'));
-    }.bind(this));
+        self.setCity($(this).attr('data'));
+    });
     $('.date').on('click', function() {
-        this.setDate($(this).attr('data'));
-    }.bind(this));
+        self.setDate($(this).attr('data'));
+    });
     $('#allEmailsButton').on('click', function() {
         $('.emails').show();
     });
