@@ -57,15 +57,15 @@ Dashboard.prototype.setup = function() {
         */
 
         this.staging = stagingResp[0].staging;
+        // remove None
+        if (document.location.href.indexOf('test=true') < 0) {
+            if ('recMG5pKfvcu3vnDI' in this.staging) {
+                delete this.staging.recMG5pKfvcu3vnDI;
+            }
+        }
         this.stagingbyName = _.sortBy(Object.keys(this.staging), function(id) {
             return this.staging[id].location;
         }.bind(this));
-        // remove None
-        /*
-        if ('recMG5pKfvcu3vnDI' in this.staging) {
-            delete this.staging.recMG5pKfvcu3vnDI;
-        }
-        */
         /*
             "recTHiQkEWipln5y0": {
                 "days": ["2016-11-07", "2016-11-06"],
@@ -119,7 +119,7 @@ Dashboard.prototype.drawUnassigned = function() {
     var assigned = [];
     Object.keys(this.staging).forEach(function (id) {
         var loc = this.staging[id];
-        assigned = assigned.concat(loc.people);
+        assigned = assigned.concat(loc.people || []);
     }.bind(this));
     var unassigned = _.reject(this.peopleByDate[this.ymd], function(id) {
         return assigned.indexOf(id) >= 0;
@@ -159,7 +159,7 @@ Dashboard.prototype.drawStaging = function(tableOnly) {
     var dayPeopleIds = this.peopleByDate[this.ymd];
     this.stagingbyName.forEach(function(id) {
         var loc = this.staging[id];
-        var peopleIds = _.intersection(dayPeopleIds, loc.people);
+        var peopleIds = _.intersection(dayPeopleIds, loc.people || []);
         var pct = 'n/a';
         if (dayPeopleIds.length) {
             pct = Math.round(peopleIds.length / dayPeopleIds.length * 100);
