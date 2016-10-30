@@ -83,17 +83,17 @@ x///////////////////////x   http://DevProgress.us
             </div>
         </div>
 
-        <div class="row" id="locations"></div>
+        <table class="table table-bordered" id="locations">
+        </table>
 
         <div>
             <h3>Carpools without a staging location</h3>
-            <!--
             Drag a carpool to a staging location.  All people in a carpool
             will be assigned to the same location for the duration of their stay.
-            -->
         </div>
         <div class="row">
           <div class="col-md-8 well" id="unassigned"></div>
+          <div class="col-md-4" id="carpoolDropZones"></div>
         </div>
 
     </div>
@@ -101,23 +101,44 @@ x///////////////////////x   http://DevProgress.us
 
 <script id="carpool" type="text/x-handlebars-template">
   {{#each carpools}}
-  <div class="carpool label label-default" id="{{id}}" draggable="true">
+  <div class="carpool label label-info" id="{{id}}" draggable="true">
     {{name}} ({{numPeople}})
   </div>
   {{/each}}
 </script>
 
-<script id="stagingColumns" type="text/x-handlebars-template">
+<script id="dropZones" type="text/x-handlebars-template">
     {{#each locations}}
-      <div class="col-md-2 location">
-        <div class="header">
-          <h3>{{location}}</h3>
-          <h4>{{people}} {{peopleLabel}} ({{percent}}%)</h4>
+        <div class="well well-lg drop-zone" data="{{id}}">
+          Drop carpool to assign to <b>{{location}}</b>
+          <div class="pending">
+              <img src="img/squares.gif">
+          </div>
+          <div class="added"></div>
         </div>
-        <div class="email-list">
-          {{emails}}
-        </div>
-      </div>
     {{/each}}
+</script>
+
+<script id="stagingColumns" type="text/x-handlebars-template">
+    <thead>
+      <tr>
+      {{#each locations}}
+        <td class="col-md-2">
+          <h3>{{location}}</h3>
+          <div>
+            <h4 class="pull-left">{{people}} {{peopleLabel}}</h4>
+            <h4 class="pull-right">{{percent}}%</h4>
+          </div>
+        </td>
+      {{/each}}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      {{#each locations}}
+        <td class="email-list">{{emails}}</td>
+      {{/each}}
+      </tr>
+    </tbody>
 </script>
 </html>
