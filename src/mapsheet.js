@@ -272,7 +272,8 @@
         }
         var options = {
             imagePath: 'img/m',
-            zoomOnClick: true
+            zoomOnClick: true,
+            maxZoom: 12
         };
         var markers = points.map(function(pt) {
           return pt.marker;
