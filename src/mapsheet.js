@@ -67,7 +67,7 @@
         if (new Date(elements[i]['Sortable Start date and time']) > new Date()) {
           var point = new Mapsheet.Point({
             model: elements[i],
-            fields: this.fields,
+           fields: this.fields,
             popupContent: this.popupContent,
             popupTemplate: this.popupTemplate,
             markerOptions: this.markerOptions,
@@ -266,10 +266,19 @@
       drawPoints: function(points) {
         for (var i = 0; i < points.length; i++) {
           var marker = this.drawMarker(points[i]);
-          marker.setMap(this.map);
+          //marker.setMap(this.map);
           this.bounds.extend(marker.position);
           points[i].marker = marker;
+        }
+        var options = {
+            imagePath: 'img/m',
+            zoomOnClick: true,
+            maxZoom: 12
         };
+        var markers = points.map(function(pt) {
+          return pt.marker;
+        });
+        var markerCluster = new MarkerClusterer(this.map, markers, options);
         if (!this.mapOptions.zoom && !this.mapOptions.center) {
           this.map.fitBounds(this.bounds);
         }
