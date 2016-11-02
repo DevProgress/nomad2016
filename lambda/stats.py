@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from dateutil import parser as date_parser
+from datetime import timedelta
 import json
 import requests
 
@@ -25,6 +26,13 @@ DAYS = {
     'recePelbT1hsTYgCn': '2016-10-31',
     'recn7EpJAFQzLFDeE': '2016-10-29'
 }
+
+def get_canvass_day(ymd):
+    for key in DAYS:
+        if DAYS[key] == ymd:
+            return key
+    return None
+
 
 def parse_people(data):
     '''
@@ -97,6 +105,13 @@ def load_staging():
     return staging
 
 
+def parse_datetime(fields, name):
+    date_label = '%s_date' % name
+    time_label = '%s_time' % name
+    if not fields.get(date_label) or not fields.get(time_label):
+        return
+    return date_parser.parse('%s %s' % (fields[date_label], fields[time_label]))
+
 def parse_carpools(data):
     '''
     Carpool Name
@@ -108,7 +123,11 @@ def parse_carpools(data):
                 "fields": {
                     "Carpool Name": "\"Melanie Neault - CPID52\""
                     "People": ["rec8116cdd76088af", "rec245db9343f55e8"],
-                    "Carpool Canvass Days": ["rec8116cdd76088af", "rec245db9343f55e8", "rec4f3bade67ff565"]
+                    "Carpool Canvass Days": ["rec8116cdd76088af", "rec245db9343f55e8", "rec4f3bade67ff565"],
+                    "Start_date": "11/03/2016",
+                    "Start_time": "5:30 AM",
+                    "Return_date": "11/05/2016",
+                    "Return_time": "6:00 PM"
                 }
             }
         ]
@@ -117,14 +136,52 @@ def parse_carpools(data):
     carpools = {}
     print('records=%s' % len(data.get('records', [])))
     for p in data.get('records', []):
-        print(p)
+        #print(p)
         fields = p['fields']
         day_ids = fields.get('Carpool Canvass Days', [])
-        carpools[p['id']] = {
+        canvass_days = [DAYS[day_id] for day_id in day_ids]
+        canvass_days = [d for d in canvass_days if d > '2016-11-01']
+        cp_id = p['id']
+        # TODO: convert start/return to consistently formatted datetimes and return
+        carpools[cp_id] = {
             'name': fields.get('Carpool Name', ''),
             'people': fields.get('People', ''),
-            'days': [DAYS[day_id] for day_id in day_ids]
+            'days': canvass_days,
         }
+        canvass = {}
+        canvass = {}
+        start_dt = parse_datetime(fields, 'Start')
+        if start_dt:
+            carpools[cp_id]['start'] = start_dt.strftime('%Y-%m-%d %H:%M')
+            # leaving before noon = canvass that day
+            if start_dt.strftime('%H:%M') <= '12:00':
+                canvass_on = start_dt
+            else:
+                canvass_on = start_dt + timedelta(days=1)
+            canvass['start'] = canvass_on.strftime('%Y-%m-%d')
+        return_dt = parse_datetime(fields, 'Return')
+        if return_dt:
+            carpools[cp_id]['return'] = return_dt.strftime('%Y-%m-%d %H:%M')
+            if return_dt.strftime('%H:%M') > '12:00':
+                canvass_on = return_dt
+            else:
+                canvass_on = return_dt - timedelta(days=1)
+            canvass['end'] = canvass_on.strftime('%Y-%m-%d')
+        valid = True
+        if start_dt and return_dt and canvass_days:
+            # canvass day before start day
+            if canvass_days[0] < canvass['start']:
+                carpools[cp_id]['invalid'] = 'starting at %s but canvassing on %s' % (
+                    start_dt.strftime('%m/%d %H:%M'),
+                    date_parser.parse(canvass_days[0]).strftime('%m/%d'))
+                valid = False
+            # canvass day after return day
+            if canvass_days[-1] > canvass['end']:
+                valid = False
+                carpools[cp_id]['invalid'] = 'canvassing on %s but returning at %s' % (
+                    date_parser.parse(canvass_days[-1]).strftime('%m/%d'),
+                    return_dt.strftime('%-I:%M %p %m/%d'))
+        carpools[cp_id]['valid'] = valid
     return carpools
 
 
@@ -147,6 +204,14 @@ def load_carpools():
     return carpools
 
 
+def load_carpool(carpool_id):
+    url = API_URL % 'Carpools/' + carpool_id
+    r = requests.get(url, headers=AUTH)
+    carpool = r.json()
+    carpools = parse_carpools({'records': [carpool]})
+    return carpools[carpool_id]
+
+
 def load_canvass_days():
     url = API_URL % 'Canvass Days'
     params = {
@@ -162,6 +227,47 @@ def load_canvass_days():
         days[day['id']] = day['fields']['Canvass Date']
         print('%s\t%s' % (day['id'], day['fields']['Canvass Date']))
     return days
+
+
+def update_carpool_dates(cp_id, start_str, return_str, canvass_days):
+    print('update_carpool_dates: carpool=%s start=%s return=%s days=%s' % (cp_id, start_str, return_str, canvass_days))
+    url = API_URL % 'Carpools/' + cp_id
+    '''
+        start_str = '2016-11-01 14:00'
+        return_str = '2016-11-09 14:00'
+        canvass_days = ['2016-11-02', '2016-11-03']
+
+        "Start_date": "11/03/2016",
+        "Start_time": "5:30 AM",
+        "Return_date": "11/05/2016",
+        "Return_time": "6:00 PM"
+        "Carpool Canvass Days": ["recfIG2WSZGfXewUz", "recaTsCv4ZxztsQcm"]
+    '''
+    start_dt = date_parser.parse(start_str)
+    return_dt = date_parser.parse(return_str)
+    # set canvass days
+    days = []
+    for day in canvass_days:
+        day_id = get_canvass_day(day)
+        if day_id:
+            days.append(day_id)
+    # update and return carpool
+    headers = {'Content-type': 'application/json'}
+    headers.update(AUTH)
+    data = {
+        'fields': {
+            'Start_date': start_dt.strftime('%Y-%m-%d'),
+            'Start_time': start_dt.strftime('%-I:%M %p'),
+            'Return_date': return_dt.strftime('%Y-%m-%d'),
+            'Return_time': return_dt.strftime('%-I:%M %p'),
+            'Carpool Canvass Days': days
+        }
+    }
+    print('updating carpool: data=%s' % (data))
+    r = requests.patch(url, headers=headers, data=json.dumps(data))
+    print('patch url=%s request=%s' % (url, r))
+    carpools = parse_carpools({'records': [r.json()]})
+    return carpools[cp_id]
 
 
 def add_people_to_location(location_id, people_ids):
@@ -193,7 +299,7 @@ def add_people_to_location(location_id, people_ids):
 
 
 def lambda_handler(event, context):
-    #print('event=%s' % event)
+    print('event=%s' % (event))
     rval = {}
     # "querystring": "table=people"
     qs = event.get('querystring', '')
@@ -204,6 +310,15 @@ def lambda_handler(event, context):
     if 'table=carpools' in qs:
         rval['carpools'] = load_carpools()
     body = event.get('body')
-    if body and body.get('people') and body.get('location'):
-        rval['staging'] = add_people_to_location(body['location'], body['people'])
+    if body:
+        if body.get('people') and body.get('location'):
+            rval['staging'] = add_people_to_location(body['location'], body['people'])
+    body = event.get('body-json')
+    if body:
+        if body.get('action') == 'update carpool':
+            rval['carpool'] = update_carpool_dates(
+                event['params']['path'].get('carpool'),
+                body.get('start'), body.get('return'), body.get('canvass'))
+    if event.get('params') and event['params'].get('path'):
+        rval['carpool'] = load_carpool(event['params']['path'].get('carpool'))
     return rval

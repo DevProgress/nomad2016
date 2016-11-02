@@ -37,7 +37,7 @@ x///////////////////////x   http://DevProgress.us
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.4/lodash.min.js"></script>
     <script type="text/javascript" src="src/fecha.min.js"></script>
-    <script type="text/javascript" src="src/carpools.js"></script>
+    <script type="text/javascript" src="src/carpool.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/dashboard.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
@@ -52,32 +52,64 @@ x///////////////////////x   http://DevProgress.us
     </script>
   </head>
 
-  <body class="container-fluid">
+  <body class="container-fluid carpool">
     <h1>nomad 2016 <b>Reno</b></h1>
 
     <img src="img/squares.gif" id="loading">
 
     <div id="content" class="container-fluid">
-        <h2>Invalid carpools</h2>
-
-        <div id="carpools" class="container">
+        <div>
+            Something's not right.  We've got you down for <span id="reason"></span>.<br>
+            Update your plans so we know when to expect you, then click
+            <button class="btn btn-primary" id="save">Save</button>
         </div>
+        <div id="carpoolDates"></div>
+    </div>
+    <div id="status">
+        <div class="alert alert-danger" role="alert" id="error"></div>
+        <div class="alert alert-danger" role="alert" id="success"></div>
     </div>
   </body>
 
 <script id="carpool" type="text/x-handlebars-template">
-  {{#each carpools}}
-  <div class="row">
-    <div class="col-md-6">{{invalid}}</div>
-    <div class="col-md-2">
-        <a href="https://airtable.com/tblKfF74o1R5lm7If/viwTuav8aZfrjQP2I/{{id}}" target="airtable">edit in Airtable</a>
-    </div>
-    <div class="col-md-2">
-        <a href="carpool.html?token={{token}}&id={{id}}" target="nomad">fix dates</a>
-    </div>
-  </div>
-  </div>
-  {{/each}}
+    <table class="table">
+        <tr>
+            <td><b>Start driving</b></td>
+            <td>
+                <div class="btn-group" data-toggle="buttons">
+                {{#each startDays}}
+                    <label class="btn btn-primary {{#if checked}}active{{/if}}">
+                        <input type="radio" name="startDate" value="{{ymd}}" {{#if checked}}checked{{/if}}> {{label}}
+                    </label>
+                {{/each}}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Canvass on</b></td>
+            <td>
+                <div class="btn-group" data-toggle="buttons">
+                {{#each canvassDays}}
+                    <label class="btn btn-primary {{#if checked}}active{{/if}}">
+                        <input type="checkbox" name="canvassDays" value="{{ymd}}" {{#if checked}}checked{{/if}}> {{label}}
+                    </label>
+                {{/each}}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Return home</b></td>
+            <td>
+                <div class="btn-group" data-toggle="buttons">
+                {{#each returnDays}}
+                    <label class="btn btn-primary {{#if checked}}active{{/if}}">
+                        <input type="radio" name="returnDate" value="{{ymd}}" {{#if checked}}checked{{/if}}> {{label}}
+                    </label>
+                {{/each}}
+                </div>
+            </td>
+        </tr>
+    </table>
 </script>
 
 </html>

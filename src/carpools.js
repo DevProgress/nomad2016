@@ -14,10 +14,10 @@ Carpools.prototype.setup = function() {
         Object.keys(response.carpools).forEach(function(cpid) {
             var carpool = response.carpools[cpid];
             if (carpool.invalid) {
-                invalid.push(_.extend({id: cpid}, carpool));
+                invalid.push(_.extend({id: cpid, token: this.token}, carpool));
             }
-        });
-        $('ul').html(this.carpoolTemplate({carpools: invalid}));
+        }.bind(this));
+        $('#carpools').html(this.carpoolTemplate({carpools: invalid}));
         $('#loading').hide();
         $('#content').show();
     }.bind(this));
