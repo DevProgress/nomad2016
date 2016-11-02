@@ -66,3 +66,16 @@ thead td {
 .label-info {
     background-color: #3E97C9;
 }
+
+#carpoolDates .btn-primary {
+    background-color: #fff;
+    color: #000;
+}
+#carpoolDates .btn-primary.active {
+    background-color: #00a9e0;
+    color: #fff;
+}
+
+.carpool #status {
+    display: none;
+}
