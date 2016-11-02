@@ -21,6 +21,7 @@ var filterByDate = function(yyyymmdd) {
         }
         point.marker.setVisible(show);
     });
+    mapsheet.renderer.redraw(mapsheet.points);
     showRides(total);
 };
 

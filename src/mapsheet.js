@@ -198,7 +198,13 @@
             }
           });
         }
-        fireGeocode(this.map)
+        fireGeocode(this.map);
+        var clusterOptions = {
+            imagePath: 'img/m',
+            zoomOnClick: true,
+            maxZoom: 12
+        };
+        this.markerCluster = new MarkerClusterer(this.map, [], clusterOptions);
       },
       /* 
 			Google Maps only colors markers #FE7569, but turns out you can use
@@ -263,6 +269,15 @@
           infowindow.opened = true;
         });
       },
+      visibleMarkers: function(points) {
+        var visible = [];
+        points.forEach(function(pt) {
+          if (pt.marker.getVisible()) {
+            visible.push(pt.marker);
+          }
+        });
+        return visible;
+      },
       drawPoints: function(points) {
         for (var i = 0; i < points.length; i++) {
           var marker = this.drawMarker(points[i]);
@@ -270,18 +285,15 @@
           this.bounds.extend(marker.position);
           points[i].marker = marker;
         }
-        var options = {
-            imagePath: 'img/m',
-            zoomOnClick: true,
-            maxZoom: 12
-        };
-        var markers = points.map(function(pt) {
-          return pt.marker;
-        });
-        var markerCluster = new MarkerClusterer(this.map, markers, options);
+        this.markerCluster.clearMarkers();
+        this.markerCluster.addMarkers(this.visibleMarkers(points));
         if (!this.mapOptions.zoom && !this.mapOptions.center) {
           this.map.fitBounds(this.bounds);
         }
+      },
+      redraw: function(points) {
+        this.markerCluster.clearMarkers();
+        this.markerCluster.addMarkers(this.visibleMarkers(points));
       }
     }
     /*
