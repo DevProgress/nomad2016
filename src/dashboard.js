@@ -94,7 +94,7 @@ Dashboard.prototype.setup = function() {
 
 Dashboard.prototype.emailList = function(peopleIds) {
     var emails = peopleIds.map(function(id) {
-        return this.people[id].email;
+        return this.people[id] ? this.people[id].email : '';
     }.bind(this));
     _.pull(emails, '');
     return emails.join(', ');

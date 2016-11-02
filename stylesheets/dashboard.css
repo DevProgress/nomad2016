@@ -1,5 +1,5 @@
 body {
-    padding-top: 70px;
+    font-family: "Comfortaa","Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
 #content {
@@ -61,4 +61,8 @@ thead td {
     display: block;
     width: 25px;
     height: 25px;
+}
+
+.label-info {
+    background-color: #3E97C9;
 }
