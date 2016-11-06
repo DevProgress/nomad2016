@@ -63,10 +63,8 @@
         this.sheetName = tabletop.model_names[0];
       }
       var elements = tabletop.sheets(this.sheetName).elements;
-      var d = new Date();
-      d.setDate(d.getDate()-1);
       for (var i = 0; i < elements.length; i++) {
-        if (new Date(elements[i]['Sortable Start date and time']) >= d) {
+        if (new Date(elements[i]['Sortable Start date and time']) >= new Date()) {
           var point = new Mapsheet.Point({
             model: elements[i],
            fields: this.fields,
@@ -78,7 +76,6 @@
           });
           if(point.isValid()){
             this.points.push(point);
-            console.log(point.model.ID)
           }
         }
       };
